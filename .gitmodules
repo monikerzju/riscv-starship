@@ -7,3 +7,6 @@
 [submodule "repo/fpga-shells"]
 	path = repo/fpga-shells
 	url = https://github.com/Phantom1003/fpga-shells.git
+[submodule "repo/ZJV2"]
+	path = repo/ZJV2
+	url = https://github.com/fishcrap/ZJV2.git
