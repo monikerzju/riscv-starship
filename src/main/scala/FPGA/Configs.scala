@@ -21,6 +21,8 @@ import sifive.fpgashells.devices.xilinx.digilentnexysa7mig._
 import sifive.blocks.devices.spi._
 import sifive.blocks.devices.uart._
 
+import zjv.platform.rocket._
+
 import sys.process._
 
 case object FPGAExtDDRSizeKey extends Field[BigInt](0x40000000L) // 1 GB
@@ -64,7 +66,6 @@ class WithA7     extends WithBoard("a7")
 
 class StarshipFPGAConfig extends Config(
   new WithPeripherals ++
-  new WithNBigCores(1) ++
   new StarshipBaseConfig().alter((site,here,up) => {
     case DebugModuleKey => None
 
@@ -91,4 +92,16 @@ class StarshipFPGAConfig extends Config(
       p.copy(hang = 0x10000, contentFileName = s"build/" + site(BoardNameKey) + s"/firmware/zsbl/bootrom.img")
     }
   })
+)
+
+class AXIZJVConfig extends Config(
+  new WithSingleAXIZJVCore(1) ++  // Dont change!!!
+  new WithIncoherentBusTopology ++
+  new StarshipFPGAConfig
+)
+
+class TLRocketConfig extends Config(
+  new WithNBigCores(1) ++
+  new WithCoherentBusTopology ++
+  new StarshipFPGAConfig
 )

@@ -4,13 +4,17 @@
 # This file is under MIT License, see https://www.phvntom.tech/LICENSE.txt
 
 TARGET_FPGA ?= a7
+TARGET_CORE ?= axizjv
 SUPPORTED_BOARDS := vc707 a7
+SUPPORTED_CORES  := rocket axizjv
 
 TOP			:= $(CURDIR)
 SRC			:= $(TOP)/repo
 BUILD		:= $(TOP)/build/$(TARGET_FPGA)
 CONFIG		:= $(TOP)/conf
 SBT_BUILD 	:= $(TOP)/target $(TOP)/project/target $(TOP)/project/project
+ZJV_SRC     := $(SRC)/ZJV2
+ZJV_RSRC    := $(SRC)/ZJV2/src/main/resources/platform/rocket/build.sbt
 
 ifndef RISCV
 $(error $$RISCV is undefined, please set $$RISCV to your riscv-toolchain)
@@ -18,6 +22,10 @@ endif
 
 ifeq ($(filter $(TARGET_FPGA),$(SUPPORTED_BOARDS)),)
 $(error $(TARGET_FPGA) is not supported yet. Choose one from $(SUPPORTED_BOARDS))
+endif
+
+ifeq ($(filter $(TARGET_CORE),$(SUPPORTED_CORES)),)
+$(error $(TARGET_CORE) is not supported yet. Choose one from $(SUPPORTED_CORES))
 endif
 
 all: bitstream
@@ -37,6 +45,9 @@ szmem_vc707 := 1024
 board_a7    := nexys_a7
 board_vc707 := vc707
 
+core_rocket := TLRocket
+core_axizjv := AXIZJV
+
 #######################################
 #                                      
 #         Verilog Generator
@@ -51,28 +62,50 @@ ROCKET_JAVA		:= java -Xmx$(ROCKET_JVM_MEM) -Xss8M -jar $(ROCKET_SRC)/sbt-launch.
 ROCKET_TOP_PROJ	?= starship.fpga
 ROCKET_TOP		?= TestHarness$(TARGET_FPGA_UP)
 ROCKET_CON_PROJ	?= starship.fpga
-ROCKET_CONFIG	?= StarshipFPGAConfig
+ROCKET_CONFIG	?= $(core_$(TARGET_CORE))Config
 ROCKET_FREQ     ?= $(freq_$(TARGET_FPGA))
 ROCKET_SZMEM    ?= $(szmem_$(TARGET_FPGA))
 ROCKET_OUTPUT	:= $(ROCKET_TOP_PROJ).$(ROCKET_TOP).$(ROCKET_CONFIG)
 ROCKET_VERILOG	:= $(ROCKET_BUILD)/$(ROCKET_OUTPUT).v
 ROCKET_FIRRTL	:= $(ROCKET_BUILD)/$(ROCKET_OUTPUT).fir
+PROJECT_CONFIG  := $(ROCKET_CON_PROJ).$(ROCKET_CONFIG),
+PROJECT_CONFIG  := $(PROJECT_CONFIG)$(ROCKET_CON_PROJ).With$(ROCKET_FREQ)MHz,
+PROJECT_CONFIG  := $(PROJECT_CONFIG)$(ROCKET_CON_PROJ).With$(ROCKET_SZMEM)MB,
+PROJECT_CONFIG  := $(PROJECT_CONFIG)$(ROCKET_CON_PROJ).With$(TARGET_FPGA_UP)
+
+define swap_sbt_fwd
+	mv $(ZJV_SRC)/build.sbt $(ZJV_SRC)/build.sbt.original
+	cp $(ZJV_RSRC) $(ZJV_SRC)/build.sbt
+endef
+
+define swap_sbt_back
+	rm $(ZJV_SRC)/build.sbt
+	mv $(ZJV_SRC)/build.sbt.original $(ZJV_SRC)/build.sbt
+endef
 
 $(ROCKET_FIRRTL): 
 	mkdir -p $(ROCKET_BUILD)
-	$(ROCKET_JAVA) "runMain freechips.rocketchip.system.Generator	\
+	$(call swap_sbt_fwd)
+	if $(ROCKET_JAVA) "runMain freechips.rocketchip.system.Generator	\
 					-td $(ROCKET_BUILD) -T $(ROCKET_TOP_PROJ).$(ROCKET_TOP)	\
-					-C $(ROCKET_CON_PROJ).$(ROCKET_CONFIG),$(ROCKET_CON_PROJ).With$(ROCKET_FREQ)MHz,$(ROCKET_CON_PROJ).With$(ROCKET_SZMEM)MB,$(ROCKET_CON_PROJ).With$(TARGET_FPGA_UP) \
-					-n $(ROCKET_OUTPUT)"
+					-C  $(PROJECT_CONFIG) \
+					-n $(ROCKET_OUTPUT)"; then \
+		echo FIRRTLized; \
+	fi
+	$(call swap_sbt_back)
 
 $(ROCKET_VERILOG): $(ROCKET_FIRRTL)
 	mkdir -p $(ROCKET_BUILD)
-	$(ROCKET_JAVA) "runMain firrtl.stage.FirrtlMain	\
+	$(call swap_sbt_fwd)
+	if $(ROCKET_JAVA) "runMain firrtl.stage.FirrtlMain	\
 					-td $(ROCKET_BUILD) --infer-rw $(ROCKET_TOP) \
 					--repl-seq-mem -c:$(ROCKET_TOP):-o:$(ROCKET_BUILD)/$(ROCKET_OUTPUT).sram.conf \
 					-faf $(ROCKET_BUILD)/$(ROCKET_OUTPUT).anno.json \
 					-fct firrtl.passes.InlineInstances \
-					-i $< -o $@ -X verilog"
+					-i $< -o $@ -X verilog"; then \
+		echo VERILOGged; \
+	fi
+	$(call swap_sbt_back)
 
 verilog: $(ROCKET_VERILOG)
 

@@ -27,6 +27,5 @@ class StarshipBaseConfig extends Config(
   new WithNExtTopInterrupts(0) ++
   new WithDTS("zjv,starship", Nil) ++
   new WithEdgeDataBits(64) ++
-  new WithCoherentBusTopology ++
   new WithoutTLMonitors ++
   new BaseConfig)
