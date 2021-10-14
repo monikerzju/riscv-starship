@@ -3,10 +3,11 @@
 # Email: phantom@zju.edu.cn
 # This file is under MIT License, see https://www.phvntom.tech/LICENSE.txt
 
+# axizjv is for the WIP single-core zjv2, sezjv isthe zjv1 with RegVault extension
 TARGET_FPGA ?= a7
-TARGET_CORE ?= axizjv
+TARGET_CORE ?= sezjv
 SUPPORTED_BOARDS := vc707 a7
-SUPPORTED_CORES  := rocket axizjv
+SUPPORTED_CORES  := rocket axizjv sezjv
 
 TOP			:= $(CURDIR)
 SRC			:= $(TOP)/repo
@@ -47,6 +48,7 @@ board_vc707 := vc707
 
 core_rocket := TLRocket
 core_axizjv := AXIZJV
+core_sezjv  := AXISEZJV
 
 #######################################
 #                                      

@@ -22,6 +22,7 @@ import sifive.blocks.devices.spi._
 import sifive.blocks.devices.uart._
 
 import zjv.platform.rocket._
+import sezjv.tile.starship._
 
 import sys.process._
 
@@ -103,5 +104,11 @@ class AXIZJVConfig extends Config(
 class TLRocketConfig extends Config(
   new WithNBigCores(1) ++
   new WithCoherentBusTopology ++
+  new StarshipFPGAConfig
+)
+
+class AXISEZJVConfig extends Config(
+  new WithOneSEZJVCore(1) ++  // Dont change!!!
+  new WithIncoherentBusTopology ++
   new StarshipFPGAConfig
 )
