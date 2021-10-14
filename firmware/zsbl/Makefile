@@ -15,7 +15,7 @@ all: $(img)
 elf: $(elf)
 $(elf): bootrom.S linker.ld
 	mkdir -p $(BUILD_DIR)
-	$(CC) -Tlinker.ld $< -nostdlib -static -Wl,--no-gc-sections -o $@
+	$(CC) -march=rv64i -mabi=lp64 -Tlinker.ld $< -nostdlib -static -Wl,--no-gc-sections -o $@
 
 bin:$(bin)
 $(bin): $(elf)

@@ -108,6 +108,10 @@ $(ROCKET_VERILOG): $(ROCKET_FIRRTL)
 		echo VERILOGged; \
 	fi
 	$(call swap_sbt_back)
+ifeq ($(TARGET_CORE), sezjv)
+	cat $(SRC)/SEZJV1/src/main/verilator/vsrc/single_port_ram.v \
+	$(SRC)/SEZJV1/src/main/verilator/vsrc/dual_port_ram.v >> $(ROCKET_VERILOG)
+endif
 
 verilog: $(ROCKET_VERILOG)
 
