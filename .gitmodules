@@ -10,3 +10,6 @@
 [submodule "repo/ZJV2"]
 	path = repo/ZJV2
 	url = https://github.com/fishcrap/ZJV2.git
+[submodule "repo/SEZJV1"]
+	path = repo/SEZJV1
+	url = https://github.com/SEZJV/SEZJV1.git
