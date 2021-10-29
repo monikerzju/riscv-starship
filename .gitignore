@@ -21,3 +21,6 @@ log*
 
 # Env lds
 firmware/fsbl/linker/board.lds
+
+# Submodules of other branches
+repo/SEZJV1
