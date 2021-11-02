@@ -24,3 +24,4 @@ firmware/fsbl/linker/board.lds
 
 # Submodules of other branches
 repo/SEZJV1
+repo/zjv-blocks
