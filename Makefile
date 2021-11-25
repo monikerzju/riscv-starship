@@ -4,9 +4,8 @@
 # This file is under MIT License, see https://www.phvntom.tech/LICENSE.txt
 
 TARGET_FPGA ?= a7
-TARGET_CORE ?= axizjv
+TARGET_CORE := axizjv
 SUPPORTED_BOARDS := vc707 a7
-SUPPORTED_CORES  := rocket axizjv
 
 TOP			:= $(CURDIR)
 SRC			:= $(TOP)/repo
@@ -22,10 +21,6 @@ endif
 
 ifeq ($(filter $(TARGET_FPGA),$(SUPPORTED_BOARDS)),)
 $(error $(TARGET_FPGA) is not supported yet. Choose one from $(SUPPORTED_BOARDS))
-endif
-
-ifeq ($(filter $(TARGET_CORE),$(SUPPORTED_CORES)),)
-$(error $(TARGET_CORE) is not supported yet. Choose one from $(SUPPORTED_CORES))
 endif
 
 all: bitstream
@@ -134,6 +129,8 @@ VERILOG_SRC			:= $(VERILOG_SRAM) \
 					   $(STARSHIP_ROM_HEX) \
 					   $(ROCKET_BUILD)/$(ROCKET_OUTPUT).v \
 					   $(ROCKET_BUILD)/plusarg_reader.v \
+					   $(ROCKET_BUILD)/dual_port_bram.v \
+					   $(ROCKET_BUILD)/single_port_bram.v \
 					   $(VIVADO_SRC)/vc707/vsrc/sdio.v \
 					   $(VIVADO_SRC)/vc707/vsrc/vc707reset.v \
 					   $(SCRIPT_SRC)/testbench/SimTestHarness.v
