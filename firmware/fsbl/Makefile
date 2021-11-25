@@ -6,7 +6,7 @@ BUILD_DIR	:=	$(ROOT_DIR)/build/$(TARGET_FPGA)/firmware/fsbl
 CC			=	$(RISCV)/bin/riscv64-unknown-elf-gcc
 OBJCOPY		=	$(RISCV)/bin/riscv64-unknown-elf-objcopy
 OBJDUMP		=	$(RISCV)/bin/riscv64-unknown-elf-objdump
-CFLAGS		=	-march=rv64ima -mcmodel=medany -O2 -std=gnu11 -Wall -nostartfiles
+CFLAGS		=	-march=rv64im -mcmodel=medany -O2 -std=gnu11 -Wall -nostartfiles
 CFLAGS		+=	-fno-common -g -DENTROPY=0 -mabi=lp64 -DNONSMP_HART=0
 CFLAGS		+=	-I ./include -I.
 LFLAGS		=	-static -nostdlib -L ./linker -T sdboot.elf.lds
