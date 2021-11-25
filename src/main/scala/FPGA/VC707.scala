@@ -50,7 +50,8 @@ class StarshipFPGATopModuleImpVC707[+L <: StarshipFPGATopVC707](_outer: L) exten
 
 class TestHarnessVC707(override implicit val p: Parameters) extends VC707Shell
     with HasDDR3 {
-
+  
+  override def desiredName = s"TestHarness"
 
   dut_clock := (p(FPGAFrequencyKey) match {
     case 25 => clk25

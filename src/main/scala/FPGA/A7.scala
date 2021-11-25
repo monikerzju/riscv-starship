@@ -52,7 +52,8 @@ class StarshipFPGATopModuleImpA7[+L <: StarshipFPGATopA7](_outer: L) extends Sta
 // Arty A7 100T has different memory interface with VC707
 class TestHarnessA7(override implicit val p: Parameters) extends NexysA7Shell
     with HasDDR2 {
-
+  
+  override def desiredName = s"TestHarness"
 
   dut_clock := (p(FPGAFrequencyKey) match {
     case 50   => clk50

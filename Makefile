@@ -152,7 +152,7 @@ $(VIVADO_BITSTREAM): $(ROCKET_VERILOG) $(VERILOG_INCLUDE) $(VERILOG_SRAM) $(VERI
 	cd $(VIVADO_BUILD); vivado -mode batch -nojournal \
 		-source $(VIVADO_SRC)/common/tcl/vivado.tcl \
 		-tclargs -F "$(VERILOG_INCLUDE)" \
-		-top-module "$(ROCKET_TOP)" \
+		-top-module "TestHarness" \
 		-ip-vivado-tcls "$(shell find '$(ROCKET_BUILD)' -name '*.vivado.tcl')" \
 		-board "$(BOARD_NAME)"
 
