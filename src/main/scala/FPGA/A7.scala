@@ -58,6 +58,7 @@ class TestHarnessA7(override implicit val p: Parameters) extends NexysA7Shell
   dut_clock := (p(FPGAFrequencyKey) match {
     case 50   => clk50
     case 200  => clk200
+    case 100  => clk100
   })
 
   withClockAndReset(dut_clock, dut_reset) {
